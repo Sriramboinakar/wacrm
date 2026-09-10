@@ -67,7 +67,13 @@ const nextConfig: NextConfig = {
   // Emit a self-contained server bundle (.next/standalone) so the
   // Docker image can run without node_modules or the Next CLI.
   // Harmless outside Docker: `next start` keeps working as before.
-  output: "standalone",
+  //
+  // Disabled on Vercel: Vercel builds with its own adapter, and
+  // Next 16.3+ (Turbopack) skips emitting next-server.js.nft.json
+  // when an adapter is present while the standalone finalizer still
+  // reads it — a guaranteed ENOENT on every Vercel build
+  // (vercel/next.js#96646). Vercel ignores standalone anyway.
+  output: process.env.VERCEL ? undefined : "standalone",
 
   /**
    * Cross-origin dev access (Next.js 16).
